@@ -5,10 +5,9 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 
-
-
-
 COPY ./src/requirements.txt /src/
+
+WORKDIR /src
 
 # COPY ./scripts/entrypoint.sh /src/
 
@@ -22,20 +21,20 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./src /src
 
-WORKDIR /src
+
 
 
 COPY ./scripts /scripts
 
 RUN chmod +x /scripts/*
 
-RUN adduser user
-RUN chown -R user:user /vol
-RUN chmod -R 755 /vol/app
+# RUN adduser user
+# RUN chown -R user:user /vol
+# RUN chmod -R 755 /vol/app
 
-USER user
+# USER user
 
-CMD ["sh", "entrypoint.sh"]
+CMD ["sh", "../scripts/entrypoint.sh"]
 
 EXPOSE 8000
 

@@ -4,9 +4,9 @@ import datetime
 
 error_msg = 'Not Found!!'
 
-def get_url():
+def get_url(a, b):
 	fetch_url = requests.get(
-		'https://api.weather.gov/points/39.7456,-97.0892'
+		'https://api.weather.gov/points/'+a+','+b
 		)
 	re_str = json.dumps(fetch_url.json(),
 						sort_keys=True,
@@ -15,11 +15,14 @@ def get_url():
 	resp_dict = json.loads(re_str)
 	# print(resp_dict)
 	final_url=resp_dict['properties']['forecastGridData']
-
+	print(final_url)
 	return final_url
+	
 
+a = '38.431564011446206'
+b = '-92.50262974404667'
 
-data = requests.get(get_url())
+data = requests.get(get_url(a,b))
 
 data_str = json.dumps(data.json(),
 						sort_keys=True,

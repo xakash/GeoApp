@@ -1,12 +1,31 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+from django.db import models
 import requests
 import datetime
 from .models import Location
-from django.shortcuts import render
+from .utils import get_temperature
+from django.utils import timezone
 
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
+
+
+class DataListView(ListView):
+    template_name = 'list.html'
+    model = Location
+    context_object_name = 'list_data'
+
+    def get_queryset(self):
+        queryset = self.model.objects.all()
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(DataListView, self).get_context_data(**kwargs)
+
+        context["list_data"] = self.get_queryset()
+
+        return context
 
 
 class WeatherDataView(DetailView):
@@ -23,9 +42,16 @@ class WeatherDataView(DetailView):
         context = super(WeatherDataView, self).get_context_data(**kwargs)
 
         context["location_data"] = self.get_queryset()
-
+        data = self.get_queryset()
+        for data in data:
+            print(data.id, data.location)
+            lat = str(data.location.y)
+            lon = str(data.location.x)
+        lat= lat
+        lon = lon
+      
         fetch_url = requests.get(
-            'https://api.weather.gov/points/39.7456,-97.0892'
+            'https://api.weather.gov/points/'+lat+','+lon
         )
         re_str = json.dumps(fetch_url.json(),
                                 sort_keys=True,
@@ -34,38 +60,56 @@ class WeatherDataView(DetailView):
         resp_dict = json.loads(re_str)
             # print(resp_dict)
         final_url=resp_dict['properties']['forecastGridData']
-
+        print(final_url)
         data = requests.get(final_url)
-
+        # print(data)
         data_str = json.dumps(data.json(),
                                 sort_keys=True,
                                 indent=4)
         data_dict = json.loads(data_str)
-        now = datetime.datetime.now()
+
+        now = timezone.now()
         date = (now.strftime("%Y-%m-%d"))
         time = (now.strftime("%H"))
-        print(time)
+
+        
         currentTime = date + "T" + time + ":00:00+00:00/PT1H"
+        currentTime2 = date + "T" + time + ":00:00+00:00/PT2H"
+        currentTime3 = date + "T" + time + ":00:00+00:00/PT3H"
+            
+
         print(currentTime)
-
+        print(currentTime2)
+       
         temp_list=(data_dict['properties']['temperature']['values'])
-
         humidity_list=(data_dict['properties']['relativeHumidity']['values'])
-
+        # print(humidity_list)
+        # print(temp_list)
         keyVal = []
         keyVal.append(currentTime)
+        keyVal.append(currentTime2)
+        keyVal.append(currentTime3)
+     
+        result_temp = (list(filter(lambda d:d['validTime'] in keyVal, temp_list)))
+        print(result_temp)
+        temperature = [item['value'] for item in result_temp]
+        final_temp = ""
 
-        temp_val = {'type': 'temperature'}
+        for i in temperature:
+            final_temp += str(round(i,2))
 
-        # result_temp = (list(filter(lambda d:d['validTime'] in keyVal, temp_list)))[0]
         # result_temp.update(temp_val)
 
-        humid_val = {'type': 'humidity'}
-        result_humidity = (list(filter(lambda d:d['validTime'] in keyVal, humidity_list)))[0]
-        result_humidity.update(humid_val)
+        # humid_val = {'type': 'humidity'}
+        result_humidity = (list(filter(lambda d:d['validTime'] in keyVal, humidity_list)))
+        humidity = [item['value'] for item in result_humidity]
+        final_humid = ""
 
-        # final_result = result_temp, result_humidity
-        # json_data = json.dumps(final_result, indent=4)
+        for i in humidity:
+            final_humid += str(round(i,2))
 
-        # context['weather_data'] = json_data
+        context['temperature'] = final_temp
+        context['humidity'] = final_humid
+
+        
         return context

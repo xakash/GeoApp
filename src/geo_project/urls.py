@@ -20,5 +20,5 @@ from django.urls import path, include
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    path('map/', include('gis_app.urls', namespace='gis_app')),
+    path('', include('gis_app.urls', namespace='gis_app')),
 ]

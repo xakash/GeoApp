@@ -8,7 +8,7 @@
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
   <style>
-    #mapid { height: 400px; }
+    #mapid { height: 700px; }
   </style>
   {% leaflet_js %}
   {% leaflet_css %}
@@ -27,6 +27,8 @@
       <script type="text/javascript">
             var lon = "{{location_data.location.x}}";
             var lat = "{{location_data.location.y}}";
+            var temp = "{{temperature}}";
+            var humid = "{{humidity}}";
         var mymap = L.map('mapid').setView([lat, lon], 4.5);
         var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
@@ -34,32 +36,12 @@
         }).addTo(mymap);
 
         var marker = L.marker([lat, lon]).addTo(mymap);
-        marker.bindPopup("<b>Details!!</b>"+"<br>"+"<b>Lat:</b>"+lat +"<br><b>Lon:</b>"+ lon +"<br>I am a popup.").openPopup();
-    //     var popup = L.popup()
-    // .setLatLng([lat, lon])
-    // .setContent("I am a standalone popup.")
-    // .openOn(mymap);
+        marker.bindPopup("<b>Details!!</b>"+"<br>"+"<b>Lat:</b>"+lat +"<br><b>Lon:</b>"+ lon +"<br><b>Temperature: </b>"+ temp + "&#176; C<br><b>Humidity: </b>"+humid+"%").openPopup();
+    
       </script>
     </div>
 
     {% endfor %}
-    <!-- <div id="map">
-      <script type="text/javascript">
-        function map_init(map, options) {
-            // get point lat and lon
-            // {% for city in location_data%}
-            var lon = "-97.0892";
-            var lat = "39.7456";
-            // {% endfor %}
-            // zoom to point & add it to map
-            map.setView([lat, lon], 4.5);
-            L.marker([lat, lon]).addTo(map);
-        }
-        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map_init);
-      </script>
-    </div> -->
+    
   </body>
 </html>
