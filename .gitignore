@@ -1,0 +1,9 @@
+#local cache
+__pycache__/
+
+#virtual environment
+htmlcov/
+.idea/
+*.pyc
+.pytest_cache/
+venv/
