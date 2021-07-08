@@ -31,12 +31,8 @@ data_dict = json.loads(data_str)
 now = datetime.datetime.now()
 date = (now.strftime("%Y-%m-%d"))
 time = (now.strftime("%H"))
-if time == '23' or time == '22':
-	time = '22'
-	currentTime = date + "T" + time + ":00:00+00:00/PT2H"
-
-else:
-	currentTime = date + "T" + time + ":00:00+00:00/PT1H"
+timeVar = "1"
+currentTime = date + "T" + time + ":00:00+00:00/PT"+timeVar+"H"
 	 
 
 print(currentTime)
@@ -51,7 +47,20 @@ keyVal.append(currentTime)
 
 # temp_val = {'type': 'temperature'}
 result_temp = (list(filter(lambda d:d['validTime'] in keyVal, temp_list)))
-print(result_temp)
+print(len(result_temp))
+
+while len(result_temp) < 1:
+	utime= int(time)
+	utime= utime-1
+	utimeVar= int(timeVar)
+	utimeVar= utimeVar+1
+	updateTime = date + "T" + str(utime) + ":00:00+00:00/PT"+str(utimeVar)+"H"
+	print(updateTime)
+	keyVal.append(updateTime)
+	print(keyVal)
+	result_temp = (list(filter(lambda d:d['validTime'] in keyVal, temp_list)))
+	print(len(result_temp))
+
 temperature = [item['value'] for item in result_temp]
 print(temperature)
 # result_temp.update(temp_val)

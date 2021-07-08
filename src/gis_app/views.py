@@ -71,33 +71,41 @@ class WeatherDataView(DetailView):
         now = timezone.now()
         date = (now.strftime("%Y-%m-%d"))
         time = (now.strftime("%H"))
+        hGap = 1
 
         
-        currentTime = date + "T" + time + ":00:00+00:00/PT1H"
-        currentTime2 = date + "T" + time + ":00:00+00:00/PT2H"
-        currentTime3 = date + "T" + time + ":00:00+00:00/PT3H"
-            
-
-        print(currentTime)
-        print(currentTime2)
-       
+        currentTime = date + "T" + time + ":00:00+00:00/PT"+str(hGap)+"H"
+   
+                   
         temp_list=(data_dict['properties']['temperature']['values'])
         humidity_list=(data_dict['properties']['relativeHumidity']['values'])
         # print(humidity_list)
         # print(temp_list)
         keyVal = []
         keyVal.append(currentTime)
-        keyVal.append(currentTime2)
-        keyVal.append(currentTime3)
+        # keyVal.append(currentTime2)
+        # keyVal.append(currentTime3)
      
         result_temp = (list(filter(lambda d:d['validTime'] in keyVal, temp_list)))
         print(result_temp)
+        print(len(result_temp))
+        
+        while len(result_temp) < 1:
+            hGap += 1
+            utime = int(time)
+            utime -= 1
+            currentTime = date + "T" + str(time) + ":00:00+00:00/PT"+str(hGap)+"H"
+            keyVal.append(currentTime)
+            print(keyVal)
+            result_temp = (list(filter(lambda d:d['validTime'] in keyVal, temp_list)))
+            break
+
         temperature = [item['value'] for item in result_temp]
         final_temp = ""
 
         for i in temperature:
             final_temp += str(round(i,2))
-
+            
         # result_temp.update(temp_val)
 
         # humid_val = {'type': 'humidity'}
